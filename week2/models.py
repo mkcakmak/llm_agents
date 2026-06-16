@@ -2,7 +2,6 @@ from langchain.tools import tool
 from langchain.agents import create_agent
 import os
 from dotenv import load_dotenv
-
 from pydantic import BaseModel, Field
 from typing import Literal
 
@@ -24,16 +23,6 @@ class WeatherInput(BaseModel):
     )
 
 
-# 2. ADIM: Tool'a bağla
-@tool(args_schema=WeatherInput)
-def get_weather(location: str, units: str = "celsius", include_forecast: bool = False) -> str:
-    """Get current weather and optional forecast."""
 
-agent = create_agent(
-    model="openrouter:anthropic/claude-3.5-haiku",
-    tools = [get_weather]
-)
-
-agent.invoke()
 
 
