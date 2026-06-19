@@ -2,3 +2,5 @@ langchain
 langchain-openrouter
 python-dotenv
 langchain-google-genai
+psycopg2-binary
+sqlmodel
