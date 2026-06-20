@@ -77,6 +77,17 @@ async def demonstrate_multi_server_mcp():
         },
     )
 
+
+    prompt_messages = await client.get_prompt(
+    server_name="math",
+    prompt_name="math_question_prompt",
+    arguments={
+        "operation": "multiply",
+        "a": "12",
+        "b": "8",
+    },
+)
+
     agent = create_agent(
         model = model,
         tools= tools, # math + search + weather, all together
@@ -90,7 +101,7 @@ async def demonstrate_multi_server_mcp():
 
     # Pick ONE of the two prompt-generated message sets to send.
     # Here we use the general/NATO question.
-    response = await agent.ainvoke({"messages": weather_prompt_messages})
+    response = await agent.ainvoke({"messages": prompt_messages})
 
     print(f"Result: {response}")
 
