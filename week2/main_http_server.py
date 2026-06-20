@@ -2,7 +2,6 @@ import asyncio
 import random
 from datetime import datetime
 from mcp.server.fastmcp import FastMCP
-from langchain_tavily import TavilySearch
 from dotenv import load_dotenv
 
 
@@ -10,6 +9,29 @@ from dotenv import load_dotenv
 load_dotenv()
 
 mcp = FastMCP("Weather")
+
+
+@mcp.resource("weather://current-conditions-guide")
+def conditions_guide() -> str:
+    """Açıklama: hava durumu kodlarının ne anlama geldiğini gösteren referans metni."""
+    return """
+    Weather condition codes:
+    - sunny: clear sky, no precipitation
+    - cloudy: overcast, no precipitation
+    - rainy: active precipitation
+    """
+
+# Dinamik resource - parametre de alabilir (URI template)
+@mcp.resource("weather://history/{location}")
+async def weather_history(location: str) -> str:
+    return f"Geçmiş hava verisi: {location} için son 30 gün ortalaması 18°C"
+
+
+@mcp.prompt()
+def weather_report_prompt(location: str, tone: str = "formal") -> str:
+    """Template for requesting a weather report in a specific tone."""
+    return f"Please give me a {tone} weather report for {location}, including any active alerts."
+
 
 @mcp.tool()
 async def get_weather(location: str) -> str:
@@ -32,6 +54,7 @@ async def get_weather(location: str) -> str:
     result = f"Weather in {location}: {condition.title()}, {temp}°C"
     print(f"[MCP Weather Server] {result}")
     return result
+
 
 @mcp.tool()
 async def get_forecast(location: str, days: int = 3) -> str:
@@ -63,6 +86,7 @@ async def get_forecast(location: str, days: int = 3) -> str:
     print(f"[MCP Weather Server] Generated {days}-day forecast for {location}")
     return result
 
+
 @mcp.tool()
 async def get_weather_alerts(location: str) -> str:
     """
@@ -85,34 +109,6 @@ async def get_weather_alerts(location: str) -> str:
     print(f"[MCP Weather Server] {result}")
     return result
 
-
-@mcp.tool()
-async def search_internet(query: str) -> str:
-    
-    """Use web search to find accurate, up-to-date information.
-
-    Args:
-        query: The search query / question to look up on the web.
-    """
-    
-    # Create the Tavily search tool once and reuse it across calls.
-    search = TavilySearch(
-    max_results=5,
-    topic="general",
-    # include_answer=False,
-    # include_raw_content=False,
-    # include_images=False,
-    # include_image_descriptions=False,
-    # search_depth="basic",
-    # time_range="day",
-    # start_date=None,
-    # end_date=None,
-    # include_domains=None,
-    # exclude_domains=None,
-    # include_usage= False
-)
-
-    return search 
 
 
 if __name__ == "__main__":
