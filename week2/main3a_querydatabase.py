@@ -79,3 +79,4 @@ agent = create_agent(model = llm,
 result = agent.invoke({"messages": [HumanMessage(content="Give me list of top 5 employees having the highest salaries from France?")]})
 
 print(result)
+print(result['message'][-1].content)

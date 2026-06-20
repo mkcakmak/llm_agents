@@ -4,3 +4,5 @@ python-dotenv
 langchain-google-genai
 psycopg2-binary
 sqlmodel
+langchain-mcp-adapters
+langchain-tavily
